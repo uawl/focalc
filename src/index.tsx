@@ -137,9 +137,7 @@ function PnLGraph({positions} : {positions: Positions}) {
     <br />
     <label for="graphRange"><b>범위</b>: {range.toFixed(2)}%</label>
     <input type="range" min="0.1" max="50" step="0.01" value={range} class="slider" name="graphRange" onInput={ev => { setRange(parseFloat((ev.target as HTMLInputElement).value)) }}></input>
-    <HighchartsReact
-      highcharts={HighCharts} 
-      options={options}/>
+    <HighchartsReact options={options}/>
   </div>
 }
 
