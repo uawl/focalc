@@ -3,8 +3,10 @@ import { useState } from 'preact/hooks';
 import * as HighCharts from 'highcharts'
 import HighChartsReact from 'highcharts-react-official';
 
-// wtf
-const HighchartsReact = (HighChartsReact as any).default
+// wtf???
+let HighchartsReact = HighChartsReact;
+while (typeof HighchartsReact != 'function')
+  HighchartsReact = (HighchartsReact as any).default;
 
 interface PositionInfo {
   side: 'long' | 'short'
