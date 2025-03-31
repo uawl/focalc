@@ -155,6 +155,4 @@ function App() {
   </div>;
 }
 
-console.log(HighchartsReact)
-
 render(<App />, document.getElementById("app")!);
