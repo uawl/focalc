@@ -1,12 +1,7 @@
 import { render } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import * as HighCharts from 'highcharts'
-import HighChartsReact from 'highcharts-react-official';
-
-// wtf???
-let HighchartsReact = HighChartsReact;
-while (typeof HighchartsReact != 'function')
-  HighchartsReact = (HighchartsReact as any).default;
+import Highcharts from 'highcharts';
 
 interface PositionInfo {
   side: 'long' | 'short'
@@ -94,6 +89,7 @@ function PositionBuilder({positions, onAddPosition, onRemovePosition, onModifyPo
 function PnLGraph({positions} : {positions: Positions}) {
   const [cur, setCur] = useState(100);
   const [range, setRange] = useState(5);
+  const containerRef = useRef(null);
 
   const rs100 = Math.floor(cur * (100 - range));
   const re100 = Math.floor(cur * (100 + range));
@@ -135,13 +131,16 @@ function PnLGraph({positions} : {positions: Positions}) {
       negativeColor: 'blue',
     }]
   }
+  useEffect(() => {
+    Highcharts.chart(containerRef.current!, options);
+  }, [options])
   return <div id="pnl">
     <label for="graphCenter"><b>현재가</b>:</label>
     <input type="text" inputMode="decimal" pattern="(\d)*(\.\d+)?" value={cur.toFixed(2)} onChange={ev => setCur(nx(parseFloat((ev.target as HTMLInputElement).value), 100)) }></input>
     <br />
     <label for="graphRange"><b>범위</b>: {range.toFixed(2)}%</label>
     <input type="range" min="0.1" max="50" step="0.01" value={range} class="slider" name="graphRange" onInput={ev => { setRange(parseFloat((ev.target as HTMLInputElement).value)) }}></input>
-    <HighchartsReact highcharts={HighCharts} options={options}/>
+    <div ref={containerRef}></div>
   </div>
 }
 
