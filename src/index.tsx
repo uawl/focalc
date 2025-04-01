@@ -2,7 +2,7 @@ import { render } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import * as HighCharts from 'highcharts'
 import Highcharts from 'highcharts';
-
+import './style.css';
 interface PositionInfo {
   side: 'long' | 'short'
   type: ['call', number] | ['put', number] | 'future'
