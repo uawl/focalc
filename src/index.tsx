@@ -88,6 +88,7 @@ function PositionBuilder({positions, onAddPosition, onRemovePosition, onModifyPo
 
 function PnLGraph({positions} : {positions: Positions}) {
   const [cur, setCur] = useState(100);
+  const [mult, setMult] = useState(1);
   const [range, setRange] = useState(5);
   const containerRef = useRef(null);
 
@@ -115,28 +116,51 @@ function PnLGraph({positions} : {positions: Positions}) {
         return left + (pos.side == 'long' ? pnl : -pnl);
       }
     }, 0);
-    expData.push({ x: curPrice, y: sum });
+    expData.push({ x: curPrice, y: sum * mult });
   }
   const options: HighCharts.Options = {
     title: {
       text: "손익"
     },
+    xAxis: {
+      gridLineWidth: 1,
+      tickInterval: 2,
+    },
+    yAxis: {
+      title: {
+        text: null
+      },
+      tickInterval: 2 * mult
+    },
+    legend: {
+      enabled: false
+    },
     tooltip: {
-      valueDecimals: 2
+      useHTML: true,
+      formatter: function (tooltip) {
+        
+        return `<b>${this.x.toFixed(2)}</b> (${((this.x - cur)/cur*100).toFixed(2)}%)<br/>손익: ${this.y?.toFixed(2)}`;
+      }
     },
     series: [{
       type: 'line',
       data: expData,
       color: 'red',
       negativeColor: 'blue',
+      animation: {
+        duration: 0
+      },
+      name: '손익'
     }]
   }
   useEffect(() => {
     Highcharts.chart(containerRef.current!, options);
   }, [options])
   return <div id="pnl">
-    <label for="graphCenter"><b>현재가</b>:</label>
+    <label for="graphCenter"><b>현재가</b>: </label>
     <input type="text" inputMode="decimal" pattern="(\d)*(\.\d+)?" value={cur.toFixed(2)} onChange={ev => setCur(nx(parseFloat((ev.target as HTMLInputElement).value), 100)) }></input>
+    <label for="graphMult"> <b>승수</b>: </label>
+    <input type="text" inputMode="decimal" pattern="(\d)*" value={mult} onChange={ev => setMult(nx(parseFloat((ev.target as HTMLInputElement).value), 1)) }></input>
     <br />
     <label for="graphRange"><b>범위</b>: {range.toFixed(2)}%</label>
     <input type="range" min="0.1" max="50" step="0.01" value={range} class="slider" name="graphRange" onInput={ev => { setRange(parseFloat((ev.target as HTMLInputElement).value)) }}></input>
